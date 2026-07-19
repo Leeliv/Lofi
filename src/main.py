@@ -1,15 +1,28 @@
 import soundfile as sf
 import sounddevice as sd
+
+#PROCESSING CLASSES
 from processing.softclipping import SoftClipping, CubeWave
+from processing.bitcrushing import BitCrushing, BitDepthReduction
+from processing.downsampling import DownSampler, ZeroAndHold
+
+from visual.sound import plot_audio
 
 def main():
     print("Hello from pyth!")
     audio_path = "audio/chillshite.wav"
     data, samplerate = sf.read(audio_path)
-    print(data.shape)
+    print(data)
 
     p_softclipping = SoftClipping(CubeWave())
+    p_bitcrushing = BitCrushing(BitDepthReduction())
+    p_downsample = DownSampler(ZeroAndHold())
     new_audio = p_softclipping.process(data)
+    new_audio = p_bitcrushing.process(new_audio)
+    new_audio = p_downsample.process(new_audio)
+    plot_audio(new_audio, samplerate)
+
+    # input("press to move on foo")
 
     sd.play(new_audio, samplerate)
 

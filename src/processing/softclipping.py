@@ -2,8 +2,11 @@ class SoftClipping():
 
     def __init__(self, algorithm):
         self.algorithm = algorithm
+        self.drive = 2
 
     def process (self, audio):
+        print("CALLING: soft clipping")
+        audio *= self.drive
         return self.algorithm.process(audio)
 
 #Algorithm classes
@@ -11,6 +14,7 @@ class SoftClipping():
 class CubeWave():
 
     def process(self, audio):
+        print("RUNNING: cube wave")
         length = len(audio)
         clipped_audio = []
 
@@ -19,17 +23,17 @@ class CubeWave():
             if frame[1] <= -1:
                 res = (2/3) * -1
                 clipped_audio.append([res, res])
-                print(res)
+                # print(res)
 
             elif frame[1] >=  -1 and frame[1] <= 1:
                 res = frame[1] - ((frame[1]**3) / 3)
                 clipped_audio.append([res, res])
-                print(res)
+                # print(res)
 
             elif frame[1] >= 1:
                 res = 2/3
                 clipped_audio.append([res,res])
-                print(res)
+                # print(res)
 
         return clipped_audio
 
