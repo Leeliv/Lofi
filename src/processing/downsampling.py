@@ -7,13 +7,12 @@ class DownSampler():
         self.reduction = 4
 
     def process(self, audio):
-        print("CALLING: Zero and hold")
+        print("CALLING: down sampler")
         return self.algorithm.process(audio, self.reduction)
 
 class ZeroAndHold():
 
     def process(self, audio, reduction):
-        
         print("RUNNING: zero and hold")
         current = 0
         count = 0

@@ -5,6 +5,7 @@ import sounddevice as sd
 from processing.softclipping import SoftClipping, CubeWave
 from processing.bitcrushing import BitCrushing, BitDepthReduction
 from processing.downsampling import DownSampler, ZeroAndHold
+from processing.wowflutter import WowAndFlutter, LFO
 
 from visual.sound import plot_audio
 
@@ -17,9 +18,12 @@ def main():
     p_softclipping = SoftClipping(CubeWave())
     p_bitcrushing = BitCrushing(BitDepthReduction())
     p_downsample = DownSampler(ZeroAndHold())
-    new_audio = p_softclipping.process(data)
+    p_wowflutter = WowAndFlutter(LFO())
+    new_audio = p_wowflutter.process(data, samplerate)
+    new_audio = p_softclipping.process(new_audio)
     new_audio = p_bitcrushing.process(new_audio)
     new_audio = p_downsample.process(new_audio)
+    
     plot_audio(new_audio, samplerate)
 
     # input("press to move on foo")

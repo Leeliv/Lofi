@@ -4,7 +4,7 @@ class BitCrushing():
 
     def __init__(self, algorithm):
         self.algorithm = algorithm
-        self.bit_depth = 8
+        self.bit_depth = 10
 
     def process(self, audio):
 
