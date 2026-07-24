@@ -2,16 +2,17 @@ import numpy as np
 
 class WowAndFlutter():
 
-    def __init__(self, algorithm):
+    def __init__(self, sample_rate, algorithm):
         self.algorithm = algorithm
+        self.sample_rate = sample_rate
         self.wow_depth = 50
         self.wow_rate = 2
         self.flutter_depth = 20
         self.flutter_rate = 0.5 
 
-    def process(self, audio, sample_rate):
+    def process(self, audio):
         print("CALLING: wow and flutter")
-        return self.algorithm.process(audio, sample_rate, self.wow_depth, self.wow_rate)
+        return self.algorithm.process(audio, self.sample_rate, self.wow_depth, self.wow_rate)
 
 class LFO():
 

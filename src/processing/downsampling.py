@@ -2,9 +2,9 @@
 
 class DownSampler():
 
-    def __init__(self, algorithm):
+    def __init__(self, reduction, algorithm):
         self.algorithm = algorithm
-        self.reduction = 4
+        self.reduction = reduction
 
     def process(self, audio):
         print("CALLING: down sampler")
@@ -20,7 +20,7 @@ class ZeroAndHold():
 
         for sample in audio:
 
-            if count <= 4:
+            if count <= reduction:
                 new_audio.append([current, current])
             else:
                 current = sample[1]

@@ -2,9 +2,10 @@ import numpy as np
 
 class BitCrushing():
 
-    def __init__(self, algorithm):
+    def __init__(self, bit_depth, algorithm):
         self.algorithm = algorithm
-        self.bit_depth = 10
+        self.bit_depth = bit_depth
+        # self.bit_depth = 10
 
     def process(self, audio):
 
