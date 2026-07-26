@@ -4,16 +4,18 @@ class WowAndFlutter():
 
     def __init__(self, sample_rate, algorithm):
         self.algorithm = algorithm
-        self.sample_rate = sample_rate
-        self.wow_depth = 50
-        self.wow_rate = 2
-        self.flutter_depth = 20
-        self.flutter_rate = 0.5 
+        self.parameters = {
+            "sample_rate": sample_rate,
+            "wow_depth": 0.5,
+            "wow_rate": 20,
+            "flutter_depth": 20,
+            "flutter_rate": 0.5,
+        }
         
 
     def process(self, audio):
         print("CALLING: wow and flutter")
-        return self.algorithm.process(audio, self.sample_rate, self.wow_rate, self.wow_depth)
+        return self.algorithm.process(audio, **self.parameters)
 
 class LFO():
 
@@ -21,8 +23,9 @@ class LFO():
         self.flutter_phase = 0
         self.wow_phase = 0
 
-    def process(self, audio, sample_rate, wow_depth=20, wow_rate=0.5):
+    def process(self, audio, sample_rate, wow_depth, wow_rate, flutter_depth, flutter_rate):
         print("RUNNING: LFO")
+        print(f"{sample_rate} {wow_depth} {wow_rate} {flutter_depth} {flutter_rate}")
         audio = np.asarray(audio, dtype=np.float32)
         output = np.zeros_like(audio)
 
