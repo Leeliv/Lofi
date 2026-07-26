@@ -27,7 +27,7 @@ def main():
     # new_audio = p_downsample.process(new_audio)
 
     pedal = PedalBoard()
-    pedal.add_effect(SoftClipping(CubeWave()))
+    pedal.add_effect(SoftClipping(2, CubeWave()))
     pedal.add_effect(DownSampler(4, ZeroAndHold()))
     pedal.add_effect(WowAndFlutter(sample_rate, LFO()))
     pedal.add_effect(BitCrushing(10, BitDepthReduction()))
