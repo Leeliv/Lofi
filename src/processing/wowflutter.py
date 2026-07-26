@@ -23,6 +23,7 @@ class LFO():
 
     def process(self, audio, sample_rate, wow_depth=20, wow_rate=0.5):
         print("RUNNING: LFO")
+        audio = np.asarray(audio, dtype=np.float32)
         output = np.zeros_like(audio)
 
         for i in range(len(audio)):

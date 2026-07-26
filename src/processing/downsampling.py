@@ -1,14 +1,16 @@
+from processing.effects import Effect
 
-
-class DownSampler():
+class DownSampler(Effect):
 
     def __init__(self, reduction, algorithm):
         self.algorithm = algorithm
-        self.reduction = reduction
+        self.parameters = {
+            "reduction": reduction
+        }
 
     def process(self, audio):
         print("CALLING: down sampler")
-        return self.algorithm.process(audio, self.reduction)
+        return self.algorithm.process(audio, **self.parameters)
 
 class ZeroAndHold():
 
