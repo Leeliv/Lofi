@@ -17,7 +17,7 @@ class AudioEngine():
         remaining = len(self.audio) - self.current_frame
         chunk_size = min(remaining, frames)
         chunk = self.audio[self.current_frame: self.current_frame+chunk_size]
-        self.pedal.process(chunk)
+        chunk = self.pedal.process(chunk)
 
         if len(chunk) < frames:
             outdata[chunk_size:] = 0
