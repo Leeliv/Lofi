@@ -1,22 +1,28 @@
-class SoftClipping():
+from processing.effects import Effect
 
-    def __init__(self, algorithm):
+class SoftClipping(Effect):
+
+    def __init__(self, drive, algorithm):
         self.algorithm = algorithm
-        self.drive = 2
+        self.parameters = {
+            "drive": drive
+        }
 
     def process (self, audio):
         print("CALLING: soft clipping")
-        audio *= self.drive
-        return self.algorithm.process(audio)
+        # audio *= self.drive
+        return self.algorithm.process(audio, **self.parameters)
 
 #Algorithm classes
 
 class CubeWave():
 
-    def process(self, audio):
+    def process(self, audio, drive):
         print("RUNNING: cube wave")
         length = len(audio)
         clipped_audio = []
+
+        audio *= drive
 
         for frame in audio:
 

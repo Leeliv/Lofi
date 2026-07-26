@@ -6,9 +6,7 @@ class AudioEngine():
     def __init__(self, pedal):
         self.pedal = pedal
         self.audio = []
-        self.current_frame = 0
-
-        
+        self.current_frame = 0 
     
     def callback(self, outdata, frames, time, status):
         if status:
@@ -25,7 +23,7 @@ class AudioEngine():
 
         outdata[:] = chunk
         self.current_frame += chunk_size 
-
+        
     def play(self, audio, sample_rate):
         finnished = threading.Event()
         self.audio = audio
