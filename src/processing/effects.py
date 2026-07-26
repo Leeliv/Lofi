@@ -1,6 +1,9 @@
 
 class Effect():
 
+    def __init__(self):
+        self.enable = True
+
     def set_perameter(self, **kwargs):
 
         for name, value in kwargs.items():
@@ -14,3 +17,9 @@ class Effect():
 
     def get_perameter():
         pass
+
+    def enable(self):
+        self.enable = True
+
+    def bypass(self):
+        self.enable = False

@@ -7,7 +7,8 @@ class PedalBoard():
     def process(self, audio):
         pro_audio = audio
         for effect in self.effects:
-            pro_audio = effect.process(pro_audio)
+            if effect.enable:
+                pro_audio = effect.process(pro_audio)
 
         return pro_audio
 
@@ -16,4 +17,10 @@ class PedalBoard():
 
     def set_effect_perameter(self, effect_index, **kwargs):
         self.effects[effect_index].set_perameter(**kwargs)
+
+    def bypass_effect(self, effect_index):
+        self.effects[effect_index].bypass()
+
+    def enable_effect(self, effect_index):
+        self.effects[effect_index].enable()
 
