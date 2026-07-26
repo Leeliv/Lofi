@@ -32,8 +32,11 @@ def main():
     pedal.add_effect(WowAndFlutter(sample_rate, LFO()))
     pedal.add_effect(BitCrushing(10, BitDepthReduction()))
 
-    pedal.set_effect_perameter(3, bit_depth=10)
+    pedal.set_effect_perameter(0, drive=4)
     pedal.set_effect_perameter(1, reduction = 2)
+    pedal.set_effect_perameter(2, wow_depth=4, wow_rate=40)
+    pedal.set_effect_perameter(3, bit_depth=10)
+    
 
     engine = AudioEngine(pedal)
     engine.play(data, sample_rate)

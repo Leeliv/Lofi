@@ -1,6 +1,7 @@
 import numpy as np
+from processing.effects import Effect
 
-class WowAndFlutter():
+class WowAndFlutter(Effect):
 
     def __init__(self, sample_rate, algorithm):
         self.algorithm = algorithm

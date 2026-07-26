@@ -1,4 +1,6 @@
-class SoftClipping():
+from processing.effects import Effect
+
+class SoftClipping(Effect):
 
     def __init__(self, drive, algorithm):
         self.algorithm = algorithm
