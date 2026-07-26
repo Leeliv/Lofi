@@ -28,10 +28,10 @@ def main():
 
     pedal = PedalBoard()
     pedal.add_effect(SoftClipping(CubeWave()))
-    pedal.add_effect(BitCrushing(10, BitDepthReduction()))
+    pedal.add_effect(BitCrushing(20, BitDepthReduction()))
     pedal.add_effect(DownSampler(4, ZeroAndHold()))
     pedal.add_effect(WowAndFlutter(sample_rate, LFO()))
-    # new_audio = pedal1.process(data)
+    # new_audio = pedal.process(data)
 
     engine = AudioEngine(pedal)
     engine.play(data, sample_rate)
@@ -39,7 +39,7 @@ def main():
     
     # plot_audio(new_audio, sample_rate)
 
-    # # input("press to move on foo")
+    # input("press to move on foo")
 
     # sd.play(new_audio, sample_rate)
 
