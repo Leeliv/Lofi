@@ -4,6 +4,7 @@ from processing.effects import Effect
 class WowAndFlutter(Effect):
 
     def __init__(self, sample_rate, algorithm):
+        super().__init__()
         self.algorithm = algorithm
         self.parameters = {
             "sample_rate": sample_rate,
@@ -16,7 +17,9 @@ class WowAndFlutter(Effect):
 
     def process(self, audio):
         print("CALLING: wow and flutter")
-        return self.algorithm.process(audio, **self.parameters)
+        wet = self.algorithm.process(audio, **self.parameters)
+        # dry = np.asarray(audio, dtype=np.float32)
+        return self.mix(wet, audio)
 
 class LFO():
 
@@ -27,7 +30,7 @@ class LFO():
     def process(self, audio, sample_rate, wow_depth, wow_rate, flutter_depth, flutter_rate):
         print("RUNNING: LFO")
         print(f"{sample_rate} {wow_depth} {wow_rate} {flutter_depth} {flutter_rate}")
-        audio = np.asarray(audio, dtype=np.float32)
+        # audio = np.asarray(audio, dtype=np.float32)
         output = np.zeros_like(audio)
 
         for i in range(len(audio)):
@@ -53,6 +56,10 @@ class LFO():
             index = int(read_position)
             fraction = read_position - index
 
+            # print(type(output))
+            # print(type(audio))
+            # print(type(fraction))
+
             output[i] = (
                 audio[index] * (1 - fraction)
                 + audio[index + 1] * fraction
@@ -65,6 +72,6 @@ class LFO():
                 2 * np.pi * wow_rate * len(audio) / sample_rate
             )
 
-
+        print(output)
 
         return output

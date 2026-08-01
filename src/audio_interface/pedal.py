@@ -5,12 +5,11 @@ class PedalBoard():
         self.effects = []
 
     def process(self, audio):
-        pro_audio = audio
         for effect in self.effects:
             if effect.enable:
-                pro_audio = effect.process(pro_audio)
+                audio = effect.process(audio)
 
-        return pro_audio
+        return audio
 
     def add_effect(self, effect):
         self.effects.append(effect)

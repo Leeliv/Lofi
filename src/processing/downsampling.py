@@ -1,3 +1,5 @@
+import numpy as np
+
 from processing.effects import Effect
 
 class DownSampler(Effect):
@@ -18,17 +20,29 @@ class ZeroAndHold():
         print("RUNNING: zero and hold")
         current = 0
         count = 0
-        new_audio = []
+        new_audio = np.empty_like(audio, dtype=np.float32)
 
-        for sample in audio:
-
+        for i, sample in enumerate(audio):
             if count <= reduction:
-                new_audio.append([current, current])
+                new_audio[i] = [current, current]
             else:
                 current = sample[1]
-                new_audio.append([current, current])
+                new_audio[i] = [current, current]
                 count = 0
+            count += 1
+
+        # for sample in audio:
+
+        #     if count <= reduction:
+        #         # new_audio.append([current, current])
+        #         np.append(new_audio, [current, current])
+        #     else:
+        #         current = sample[1]
+        #         # new_audio.append([current, current])
+        #         np.append(new_audio, [current, current])
+        #         count = 0
             
-            count +=1
+        #     count +=1
             
+        print(new_audio)
         return new_audio

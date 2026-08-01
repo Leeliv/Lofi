@@ -1,6 +1,8 @@
 import sounddevice as sd
 import threading
 
+import numpy as np
+
 class AudioEngine():
 
     def __init__(self, pedal):
@@ -15,6 +17,7 @@ class AudioEngine():
         remaining = len(self.audio) - self.current_frame
         chunk_size = min(remaining, frames)
         chunk = self.audio[self.current_frame: self.current_frame+chunk_size]
+        chunk = np.asarray(chunk, dtype=np.float32)
         chunk = self.pedal.process(chunk)
 
         if len(chunk) < frames:
@@ -23,6 +26,7 @@ class AudioEngine():
 
         outdata[:] = chunk
         self.current_frame += chunk_size 
+        print(chunk)
         
     def play(self, audio, sample_rate):
         finnished = threading.Event()

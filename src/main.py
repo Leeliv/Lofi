@@ -32,7 +32,7 @@ def main():
     pedal.set_effect_perameter(2, wow_depth=4, wow_rate=40)
     pedal.set_effect_perameter(3, bit_depth=10)
 
-    pedal.bypass_effect(2)
+    # pedal.bypass_effect(2)
     
 
     engine = AudioEngine(pedal)
