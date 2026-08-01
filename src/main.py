@@ -9,6 +9,8 @@ from processing.wowflutter import WowAndFlutter, LFO
 
 from audio_engine.audio_engine import AudioEngine
 from audio_interface.pedal import PedalBoard
+
+#VISUAL PLOTTING
 from visual.sound import plot_audio
 
 def main():
@@ -17,25 +19,20 @@ def main():
     data, sample_rate = sf.read(audio_path)
     print(data)
 
-    # p_softclipping = SoftClipping(CubeWave())
-    # p_bitcrushing = BitCrushing(BitDepthReduction())
-    # p_downsample = DownSampler(ZeroAndHold())
-    # p_wowflutter = WowAndFlutter(LFO())
-    # new_audio = p_wowflutter.process(data, samplerate)
-    # new_audio = p_softclipping.process(new_audio)
-    # new_audio = p_bitcrushing.process(new_audio)
-    # new_audio = p_downsample.process(new_audio)
-
     pedal = PedalBoard()
     pedal.add_effect(SoftClipping(2, CubeWave()))
     pedal.add_effect(DownSampler(4, ZeroAndHold()))
     pedal.add_effect(WowAndFlutter(sample_rate, LFO()))
     pedal.add_effect(BitCrushing(10, BitDepthReduction()))
 
+    
+
     pedal.set_effect_perameter(0, drive=4)
     pedal.set_effect_perameter(1, reduction = 2)
     pedal.set_effect_perameter(2, wow_depth=4, wow_rate=40)
     pedal.set_effect_perameter(3, bit_depth=10)
+
+    # pedal.bypass_effect(2)
     
 
     engine = AudioEngine(pedal)

@@ -1,3 +1,4 @@
+import numpy as np
 from processing.effects import Effect
 
 class SoftClipping(Effect):
@@ -20,27 +21,44 @@ class CubeWave():
     def process(self, audio, drive):
         print("RUNNING: cube wave")
         length = len(audio)
-        clipped_audio = []
+        clipped_audio = np.empty_like(audio, dtype=np.float32)
 
         audio *= drive
 
-        for frame in audio:
+        for i, frame in enumerate(audio):
 
             if frame[1] <= -1:
                 res = (2/3) * -1
-                clipped_audio.append([res, res])
-                # print(res)
 
             elif frame[1] >=  -1 and frame[1] <= 1:
                 res = frame[1] - ((frame[1]**3) / 3)
-                clipped_audio.append([res, res])
-                # print(res)
 
             elif frame[1] >= 1:
                 res = 2/3
-                clipped_audio.append([res,res])
-                # print(res)
 
+            clipped_audio[i] = [res,res]
+
+        # for frame in audio:
+
+        #     if frame[1] <= -1:
+        #         res = (2/3) * -1
+        #         # clipped_audio.append([res, res])
+        #         np.append(clipped_audio, [res, res])
+        #         # print(res)
+
+        #     elif frame[1] >=  -1 and frame[1] <= 1:
+        #         res = frame[1] - ((frame[1]**3) / 3)
+        #         # clipped_audio.append([res, res])
+        #         np.append(clipped_audio,[res,res])
+        #         # print(res)
+
+        #     elif frame[1] >= 1:
+        #         res = 2/3
+        #         # clipped_audio.append([res,res])
+        #         np.append(clipped_audio,[res,res])
+        #         # print(res)
+
+        print(clipped_audio)
         return clipped_audio
 
 class PolyWave():

@@ -23,6 +23,8 @@ class BitDepthReduction():
         
         np_audio = np.round(np_audio * levels) / levels
 
+        print(np_audio)
+
         return np_audio
 
 class FractinalBitCrush():
