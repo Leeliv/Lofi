@@ -6,6 +6,7 @@ from processing.softclipping import SoftClipping, CubeWave
 from processing.bitcrushing import BitCrushing, BitDepthReduction
 from processing.downsampling import DownSampler, ZeroAndHold
 from processing.wowflutter import WowAndFlutter, LFO
+from processing.delay import Delay, SimpleDelayBuffer
 
 from audio_engine.audio_engine import AudioEngine
 from audio_interface.pedal import PedalBoard
@@ -20,17 +21,18 @@ def main():
     print(data)
 
     pedal = PedalBoard()
-    pedal.add_effect(SoftClipping(2, CubeWave()))
-    pedal.add_effect(DownSampler(4, ZeroAndHold()))
-    pedal.add_effect(WowAndFlutter(sample_rate, LFO()))
-    pedal.add_effect(BitCrushing(10, BitDepthReduction()))
+    # pedal.add_effect(SoftClipping(2, CubeWave()))
+    # pedal.add_effect(DownSampler(4, ZeroAndHold()))
+    # pedal.add_effect(WowAndFlutter(sample_rate, LFO()))
+    pedal.add_effect(BitCrushing(5, BitDepthReduction()))
+    pedal.add_effect(Delay(SimpleDelayBuffer()))
 
     
 
-    pedal.set_effect_perameter(0, drive=4)
-    pedal.set_effect_perameter(1, reduction = 2)
-    pedal.set_effect_perameter(2, wow_depth=4, wow_rate=40)
-    pedal.set_effect_perameter(3, bit_depth=10)
+    # pedal.set_effect_perameter(0, drive=4)
+    # pedal.set_effect_perameter(1, reduction = 2)
+    # pedal.set_effect_perameter(2, wow_depth=4, wow_rate=40)
+    # pedal.set_effect_perameter(3, bit_depth=10)
 
     # pedal.bypass_effect(2)
     

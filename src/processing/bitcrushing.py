@@ -4,6 +4,8 @@ from processing.effects import Effect
 class BitCrushing(Effect):
 
     def __init__(self, bit_depth, algorithm):
+        super().__init__()
+
         self.algorithm = algorithm
         self.parameters = {
             "bit_depth": bit_depth
@@ -11,7 +13,7 @@ class BitCrushing(Effect):
 
     def process(self, audio):
         print("CALLING: bit crusher")
-        return self.algorithm.process(audio, **self.parameters)
+        return self.mix(self.algorithm.process(audio, **self.parameters), audio)
 
 class BitDepthReduction():
 

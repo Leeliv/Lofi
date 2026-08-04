@@ -3,7 +3,7 @@ class Effect():
 
     def __init__(self):
         self.enable = True
-        self.mix_percent = 0.1
+        self.mix_percent = 0.5
 
     def set_perameter(self, **kwargs):
 
