@@ -21,10 +21,11 @@ def main():
     print(data)
 
     pedal = PedalBoard()
-    # pedal.add_effect(SoftClipping(2, CubeWave()))
-    # pedal.add_effect(DownSampler(4, ZeroAndHold()))
-    # pedal.add_effect(WowAndFlutter(sample_rate, LFO()))
-    pedal.add_effect(BitCrushing(5, BitDepthReduction()))
+    
+    # pedal.add_effect(DownSampler(2, ZeroAndHold()))
+    pedal.add_effect(WowAndFlutter(sample_rate, LFO()))
+    pedal.add_effect(SoftClipping(1, CubeWave()))
+    # pedal.add_effect(BitCrushing(6, BitDepthReduction()))
     pedal.add_effect(Delay(SimpleDelayBuffer()))
 
     
