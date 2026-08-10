@@ -30,14 +30,17 @@ class SimpleDelayBuffer():
             #reset buffer index for circular array
             self.buffer_index %= len(self.buffer)
 
-        print(self.buffer)
+        # print(self.buffer)
 
         if (self.buffer[self.buffer_index][0] != 9).any():
-            #add quiet delay to played audio
+            
+            #Additinal effect algorithms
             low_pass_filter = lpf()
             cube_wave_clipping = CubeWave()
             new_audio = cube_wave_clipping.process(audio, 1)
             new_audio = low_pass_filter.process(new_audio, 0.5)
+
+            #add quiet delay to played audio
             new_audio = new_audio + (self.buffer[self.buffer_index] *0.2)
 
             #quieter delay to write to buffer

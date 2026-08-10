@@ -9,6 +9,7 @@ class LpwPassFilter(Effect):
         self.smooth_factor = smooth_factor
 
     def process(self, audio):
+        # print("CALLING: low pass filter")
         return self.algorithm.process(audio, self.smooth_factor)
 
 class lpf():
@@ -21,8 +22,6 @@ class lpf():
         if (self.prev_audio[1] == 9).any():
             
             self.prev_audio = audio
-            print("NANNANAN")
-            print(audio)
             return audio
-        print("LALALLALALA")
+
         return smooth_factor * audio + (1 - smooth_factor) * self.prev_audio

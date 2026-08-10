@@ -16,7 +16,7 @@ class WowAndFlutter(Effect):
         
 
     def process(self, audio):
-        print("CALLING: wow and flutter")
+        # print("CALLING: wow and flutter")
         wet = self.algorithm.process(audio, **self.parameters)
         # dry = np.asarray(audio, dtype=np.float32)
         return self.mix(wet, audio)
@@ -28,8 +28,8 @@ class LFO():
         self.wow_phase = 0
 
     def process(self, audio, sample_rate, wow_depth, wow_rate, flutter_depth, flutter_rate):
-        print("RUNNING: LFO")
-        print(f"{sample_rate} {wow_depth} {wow_rate} {flutter_depth} {flutter_rate}")
+        # print("RUNNING: LFO")
+        # print(f"{sample_rate} {wow_depth} {wow_rate} {flutter_depth} {flutter_rate}")
         # audio = np.asarray(audio, dtype=np.float32)
         output = np.zeros_like(audio)
 
@@ -71,7 +71,5 @@ class LFO():
             self.wow_phase += (
                 2 * np.pi * wow_rate * len(audio) / sample_rate
             )
-
-        print(output)
 
         return output
