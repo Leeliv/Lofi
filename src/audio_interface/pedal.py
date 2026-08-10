@@ -8,6 +8,8 @@ class PedalBoard():
         for effect in self.effects:
             if effect.enable:
                 audio = effect.process(audio)
+                print("audio Return:")
+                print(audio)
 
         return audio
 

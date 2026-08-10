@@ -20,6 +20,8 @@ class AudioEngine():
         chunk = np.asarray(chunk, dtype=np.float32)
         chunk = self.pedal.process(chunk)
 
+        print(chunk)
+
         if len(chunk) < frames:
             outdata[chunk_size:] = 0
             raise sd.CallbackStop()
