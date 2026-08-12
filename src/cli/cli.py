@@ -33,6 +33,10 @@ class CLI():
                 command_obj = RemoveCommand(perameters[0])
                 self.command_queue.put(command_obj)
 
+            if command == "bypass":
+                command_obj = BypassCommand(perameters[0])
+                self.command_queue.put(command_obj)
+
     # def add(self, perameters):
     #     self.command_queue.put(["add", perameters])
     #     self.effects.append(perameters[0])
@@ -48,6 +52,15 @@ class CLI():
 
     def stop(self):
         self.running = False
+
+class BypassCommand():
+
+    def __init__(self, index):
+        self.index = int(index)
+
+    def execute(self, pedal):
+        pedal.bypass_effect(self.index)
+
 
 class RemoveCommand():
     

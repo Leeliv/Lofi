@@ -23,7 +23,7 @@ class Effect():
         self.enable = True
 
     def bypass(self):
-        self.enable = False
+        self.enable = not self.enable
 
     def mix(self, wet, dry):
         # print("RUNNING MIXXXXXXX")
