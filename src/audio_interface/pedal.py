@@ -14,6 +14,9 @@ class PedalBoard():
     def add_effect(self, effect):
         self.effects.append(effect)
 
+    def remove_effect(self, index):
+        self.effects.pop(index)
+
     def set_effect_perameter(self, effect_index, **kwargs):
         self.effects[effect_index].set_perameter(**kwargs)
 

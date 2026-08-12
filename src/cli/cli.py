@@ -30,14 +30,15 @@ class CLI():
                 self.command_queue.put(command_obj)
             
             if command == "remove":
-                self.remove(parameters[0])
+                command_obj = RemoveCommand(perameters[0])
+                self.command_queue.put(command_obj)
 
-    def add(self, perameters):
-        self.command_queue.put(["add", perameters])
-        self.effects.append(perameters[0])
+    # def add(self, perameters):
+    #     self.command_queue.put(["add", perameters])
+    #     self.effects.append(perameters[0])
 
-    def remove(self, index):
-        self.command_queue.get(index)
+    # def remove(self, index):
+    #     self.command_queue.get(index)
 
     def bypass():
         pass
@@ -47,6 +48,15 @@ class CLI():
 
     def stop(self):
         self.running = False
+
+class RemoveCommand():
+    
+    def __init__(self, index):
+        self.index = int(index)
+
+    def execute(self, pedal):
+        pedal.remove_effect(self.index)
+
 
 class AddCommand():
 
