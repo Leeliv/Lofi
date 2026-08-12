@@ -20,6 +20,7 @@ class AudioEngine():
         self.audio = []
         self.current_frame = 0 
         self.sample_rate = sample_rate
+        self.playback = True
     
     def callback(self, outdata, frames, time, status):
         if status:
@@ -27,52 +28,29 @@ class AudioEngine():
 
         self.process_command()
 
-        remaining = len(self.audio) - self.current_frame
-        chunk_size = min(remaining, frames)
-        chunk = self.audio[self.current_frame: self.current_frame+chunk_size]
-        chunk = np.asarray(chunk, dtype=np.float32)
-        chunk = self.pedal.process(chunk)
+        if self.playback == False:
+            outdata.fill(0)
+        else:
+            remaining = len(self.audio) - self.current_frame
+            chunk_size = min(remaining, frames)
+            chunk = self.audio[self.current_frame: self.current_frame+chunk_size]
+            chunk = np.asarray(chunk, dtype=np.float32)
+            chunk = self.pedal.process(chunk)
 
-        if len(chunk) < frames:
-            outdata[chunk_size:] = 0
-            raise sd.CallbackStop()
+            if len(chunk) < frames:
+                outdata[chunk_size:] = 0
+                raise sd.CallbackStop()
 
-        outdata[:] = chunk
-        self.current_frame += chunk_size 
+            outdata[:] = chunk
+            self.current_frame += chunk_size 
+
+        
 
     def process_command(self):
         while True:
             try:
                 command_obj = self.command_queue.get_nowait()
-                command_obj.execute(self.pedal)
-
-                # command = command_obj[0]
-                # perameters = command_obj[1]
-
-                # if command == "add":
-
-                    # if not perameters:
-                    #     break
-
-                    # if perameters[0] == "bit_crush":
-                    #     self.pedal.add_effect(BitCrushing(int(perameters[1]), BitDepthReduction()))
-                    
-                    # if perameters[0] == "soft_clip":
-                    #     self.pedal.add_effect(SoftClipping(int(perameters[1]), CubeWave()))
-
-                    # if perameters[0] == "delay":
-                    #     self.pedal.add_effect(Delay(SimpleDelayBuffer()))
-
-                    # if perameters[0] == "down_sample":
-                    #     self.pedal.add_effect(DownSampler(int(perameters[1]), ZeroAndHold()))
-
-                    # if perameters[0] == "wow_flutter":
-                    #     self.pedal.add_effect(WowAndFlutter(self.sample_rate, LFO()))
-
-                    # if perameters[0] == "lpf":
-                    #     self.pedal.add_effect(LpwPassFilter(float(perameters[1]), lpf()))
-
-
+                command_obj.execute(self)
 
             except Empty:
                 break
@@ -89,4 +67,12 @@ class AudioEngine():
         ):
             finnished.wait()
             print("finnished")
+
+    def pause(self):
+        self.playback = False
+        print("PAUSINGGGG")
+
+    def resume(self):
+        self.playback = True
+        print("PLAYYYINGGG")
 

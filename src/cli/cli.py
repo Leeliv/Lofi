@@ -37,15 +37,13 @@ class CLI():
                 command_obj = BypassCommand(perameters[0])
                 self.command_queue.put(command_obj)
 
-    # def add(self, perameters):
-    #     self.command_queue.put(["add", perameters])
-    #     self.effects.append(perameters[0])
+            if command == "pause":
+                command_obj = PauseCommand()
+                self.command_queue.put(command_obj)
 
-    # def remove(self, index):
-    #     self.command_queue.get(index)
-
-    def bypass():
-        pass
+            if command == "play":
+                command_obj = PlayCommand()
+                self.command_queue.put(command_obj)
 
     def edit():
         pass
@@ -53,13 +51,23 @@ class CLI():
     def stop(self):
         self.running = False
 
+class PlayCommand():
+
+    def execute(self, engine):
+        engine.resume()
+
+class PauseCommand():
+
+    def execute(self, engine):
+        engine.pause()
+
 class BypassCommand():
 
     def __init__(self, index):
         self.index = int(index)
 
-    def execute(self, pedal):
-        pedal.bypass_effect(self.index)
+    def execute(self, engine):
+        engine.pedal.bypass_effect(self.index)
 
 
 class RemoveCommand():
@@ -67,8 +75,8 @@ class RemoveCommand():
     def __init__(self, index):
         self.index = int(index)
 
-    def execute(self, pedal):
-        pedal.remove_effect(self.index)
+    def execute(self, engine):
+        engine.pedal.remove_effect(self.index)
 
 
 class AddCommand():
@@ -102,6 +110,6 @@ class AddCommand():
         if self.perameters[0] == "lpf":
             self.effect = LpwPassFilter(float(self.perameters[1]), lpf())
 
-    def execute(self, pedal):
-        pedal.add_effect(self.effect)
+    def execute(self, engine):
+        engine.pedal.add_effect(self.effect)
 
