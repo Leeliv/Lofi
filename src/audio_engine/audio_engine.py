@@ -44,32 +44,35 @@ class AudioEngine():
         while True:
             try:
                 command_obj = self.command_queue.get_nowait()
+                command_obj.execute(self.pedal)
 
-                command = command_obj[0]
-                perameters = command_obj[1]
+                # command = command_obj[0]
+                # perameters = command_obj[1]
 
-                if command == "add":
+                # if command == "add":
 
-                    if not perameters:
-                        break
+                    # if not perameters:
+                    #     break
 
-                    if perameters[0] == "bit_crush":
-                        self.pedal.add_effect(BitCrushing(int(perameters[1]), BitDepthReduction()))
+                    # if perameters[0] == "bit_crush":
+                    #     self.pedal.add_effect(BitCrushing(int(perameters[1]), BitDepthReduction()))
                     
-                    if perameters[0] == "soft_clip":
-                        self.pedal.add_effect(SoftClipping(int(perameters[1]), CubeWave()))
+                    # if perameters[0] == "soft_clip":
+                    #     self.pedal.add_effect(SoftClipping(int(perameters[1]), CubeWave()))
 
-                    if perameters[0] == "delay":
-                        self.pedal.add_effect(Delay(SimpleDelayBuffer()))
+                    # if perameters[0] == "delay":
+                    #     self.pedal.add_effect(Delay(SimpleDelayBuffer()))
 
-                    if perameters[0] == "down_sample":
-                        self.pedal.add_effect(DownSampler(int(perameters[1]), ZeroAndHold()))
+                    # if perameters[0] == "down_sample":
+                    #     self.pedal.add_effect(DownSampler(int(perameters[1]), ZeroAndHold()))
 
-                    if perameters[0] == "wow_flutter":
-                        self.pedal.add_effect(WowAndFlutter(self.sample_rate, LFO()))
+                    # if perameters[0] == "wow_flutter":
+                    #     self.pedal.add_effect(WowAndFlutter(self.sample_rate, LFO()))
 
-                    if perameters[0] == "lpf":
-                        self.pedal.add_effect(LpwPassFilter(float(perameters[1]), lpf()))
+                    # if perameters[0] == "lpf":
+                    #     self.pedal.add_effect(LpwPassFilter(float(perameters[1]), lpf()))
+
+
 
             except Empty:
                 break

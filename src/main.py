@@ -32,13 +32,18 @@ def main():
     data, sample_rate = sf.read(audio_path)
 
     command_queue = Queue(maxsize = 5)
-    cli = CLI(command_queue)
+
+    pedal = PedalBoard()
+
+    engine = AudioEngine(sample_rate, pedal, command_queue)
+
+    cli = CLI(engine, command_queue)
     
     cli_thread = threading.Thread(target= cli.run)
     
 
     print("CONTINUE")
-    pedal = PedalBoard()
+    
     # pedal.add_effect(SoftClipping(1, CubeWave()))
     # pedal.add_effect(DownSampler(2, ZeroAndHold()))
     # pedal.add_effect(WowAndFlutter(sample_rate, LFO()))
@@ -57,7 +62,7 @@ def main():
     
 
     cli_thread.start()
-    engine = AudioEngine(sample_rate, pedal, command_queue)
+    
     engine.play(data, sample_rate)
     
     
