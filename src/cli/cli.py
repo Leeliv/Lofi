@@ -45,11 +45,39 @@ class CLI():
                 command_obj = PlayCommand()
                 self.command_queue.put(command_obj)
 
+            if command == "effect":
+                command_obj = ViewEffect(perameters, self.effects)
+                self.command_queue.put(command_obj)
+
+
     def edit():
         pass
 
     def stop(self):
         self.running = False
+
+class ViewEffect():
+
+    def __init__(self, perameters, effects):
+        self.index = int(perameters[0])
+        self.effects = effects
+
+    def execute(self, engine):
+        effect_name = self.effects[self.index]
+        parameters_names = engine.pedal.effects[self.index].parameters
+        print("\n")
+        print(effect_name)
+        print(parameters_names)
+        print("\n")
+
+
+class EditPerams():
+
+    def __init__():
+        pass
+    
+    def execute():
+        pass
 
 class PlayCommand():
 

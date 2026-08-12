@@ -3,6 +3,7 @@ class PedalBoard():
 
     def __init__(self):
         self.effects = []
+        # self.effect_names = []
 
     def process(self, audio):
         for effect in self.effects:
