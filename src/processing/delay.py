@@ -21,8 +21,13 @@ class SimpleDelayBuffer():
 
     def __init__(self):
         self.buffer = [np.full((1024,2),9)] * 70
-        self.buffer_index = 0
         self.saturartion = CubeWave()
+
+        self.max_delay = 2.0
+        self.buffer_size = int(self.max_delay * sample_rate)
+
+        self.buffer = np.zeros((self.buffer_size, 2), dtype=np.float32)
+        self.buffer_index = 0
 
     def process(self, audio):
         if self.buffer_index == len(self.buffer):

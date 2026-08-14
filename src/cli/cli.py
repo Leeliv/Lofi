@@ -25,7 +25,7 @@ class CLI():
 
             if command == "add":
                 command_obj = AddCommand(perameters)
-                command_obj.build()
+                # command_obj.build()
                 self.effects.append(perameters[0])
                 self.command_queue.put(command_obj)
             
@@ -47,6 +47,10 @@ class CLI():
 
             if command == "effect":
                 command_obj = ViewEffect(perameters, self.effects)
+                self.command_queue.put(command_obj)
+
+            if command == "set":
+                command_obj = EditPerams(perameters)
                 self.command_queue.put(command_obj)
 
 
@@ -73,11 +77,13 @@ class ViewEffect():
 
 class EditPerams():
 
-    def __init__():
-        pass
+    def __init__(self, params):
+        self.index = int(params[0])
+        self.peram = params[1]
+        self.value = int(params[2])
     
-    def execute():
-        pass
+    def execute(self, engine):
+        engine.pedal.set_perameter(self.index, self.peram, self.value)
 
 class PlayCommand():
 
@@ -110,34 +116,51 @@ class RemoveCommand():
 class AddCommand():
 
     def __init__(self, perameters):
-        self.effect = None
+        # self.effect = None
         self.perameters = perameters
         # self.effect_obj = None
 
-    def build(self):
+    def execute(self, engine):
         # print("peramsssss")
 
         if not self.perameters:
             return
 
         if self.perameters[0] == "bit_crush":
-            self.effect = BitCrushing(int(self.perameters[1]), BitDepthReduction())
+            effect = BitCrushing(
+                int(self.perameters[1]), 
+                BitDepthReduction()
+            )
 
         if self.perameters[0] == "soft_clip":
-            self.effect = SoftClipping(int(self.perameters[1]), CubeWave())
+            effect = SoftClipping(
+                int(self.perameters[1]), 
+                CubeWave()
+            )
 
         if self.perameters[0] == "delay":
-            self.effect = Delay(SimpleDelayBuffer())
+            effect = Delay(
+                SimpleDelayBuffer()
+            )
 
         if self.perameters[0] == "down_sample":
-            self.effect = DownSampler(int(self.perameters[1]), ZeroAndHold())
+            effect = DownSampler(
+                int(self.perameters[1]), 
+                ZeroAndHold()
+            )
             
         if self.perameters[0] == "wow_flutter":
-            self.effect = WowAndFlutter(self.sample_rate, LFO())
+            effect = WowAndFlutter(
+                engine.sample_rate, 
+                LFO()
+            )
 
         if self.perameters[0] == "lpf":
-            self.effect = LpwPassFilter(float(self.perameters[1]), lpf())
+            effect = LpwPassFilter(
+                float(self.perameters[1]), 
+                lpf()
+            )
 
-    def execute(self, engine):
-        engine.pedal.add_effect(self.effect)
+    # def execute(self, engine):
+        engine.pedal.add_effect(effect)
 
