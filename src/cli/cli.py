@@ -140,7 +140,7 @@ class AddCommand():
 
         if self.perameters[0] == "delay":
             effect = Delay(
-                SimpleDelayBuffer()
+                SimpleDelayBuffer(engine.sample_rate)
             )
 
         if self.perameters[0] == "down_sample":
