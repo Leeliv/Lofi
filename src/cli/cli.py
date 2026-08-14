@@ -80,7 +80,7 @@ class EditPerams():
     def __init__(self, params):
         self.index = int(params[0])
         self.peram = params[1]
-        self.value = int(params[2])
+        self.value = float(params[2])
     
     def execute(self, engine):
         engine.pedal.set_perameter(self.index, self.peram, self.value)

@@ -12,13 +12,13 @@ class Delay(Effect):
 
         self.algorithm = algorithm
         # self.sample_rate = sample_rate
-        self.perameters = {
+        self.parameters = {
             "delay_time": 0.5,
             "feedback": 0.5
         }
 
     def process(self, audio):
-        return self.algorithm.process(audio, **self.perameters)
+        return self.algorithm.process(audio, **self.parameters)
 
 class SimpleDelayBuffer():
 
@@ -56,7 +56,7 @@ class SimpleDelayBuffer():
         new_audio = low_pass_filter.process(new_audio, 0.5)
 
             #add quiet delay to played audio
-        new_audio = new_audio + (self.buffer[self.buffer_index] *0.2)
+        new_audio = new_audio + (self.buffer[self.buffer_index] * feedback)
 
             #quieter delay to write to buffer
         soft_audio = new_audio * 0.5
@@ -67,7 +67,6 @@ class SimpleDelayBuffer():
         self.buffer[self.buffer_index] = audio + soft_audio
 
         self.buffer_index = (self.buffer_index + 1) % len(self.buffer)
-        print(self.buffer_index)
 
         return new_audio
         
