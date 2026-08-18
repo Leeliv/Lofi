@@ -6,29 +6,30 @@ STILL A WORK IN PROGRESS so don't look to hard :)
 Current functionality:
 
   Effects:
-    Soft clipping
-    Wow and Wobble
-    Bit crushing
-    Delay and feedback
-    Down sampling
+    Soft clipping, 
+    Wow and Wobble, 
+    Bit crushing, 
+    Delay and feedback, 
+    Down sampling, and 
     Low pass filter
 
   CLI:
-    add: adds chosen effect to pedal board
-    remove: removes chosen effect from pedal board
-    bypass: bypasses chosen effect
-    pause: pauses
-    play: plays
-    effect: shows the effect name and chosen parameters for that effect
-    set: changes parameters for chosen effect
-    list: displays a list of usable effects and their adjustable parameters
+    add: adds chosen effect to pedal board, 
+    remove: removes chosen effect from pedal board, 
+    bypass: bypasses chosen effect, 
+    pause: pauses, 
+    play: plays, 
+    effect: shows the effect name and chosen parameters for that effect, 
+    set: changes parameters for chosen effect, 
+    list: displays a list of usable effects and their adjustable parameters, 
 
   Tech stack:
     Python :)
-    next week:
-      HTML
-      CSS
-      FastAPI
+    
+  next week:
+    HTML
+    CSS
+    FastAPI
     
   More to come...
   
