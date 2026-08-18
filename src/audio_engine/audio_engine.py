@@ -69,7 +69,8 @@ class AudioEngine():
             # blocksize = blocksize,
             channels = 2,
             callback = self.callback,
-            finished_callback = finnished.set
+            finished_callback = finnished.set,
+            blocksize = 1024
         ):
             finnished.wait()
             print("finnished")

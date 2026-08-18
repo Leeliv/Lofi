@@ -14,7 +14,7 @@ class Delay(Effect):
         # self.sample_rate = sample_rate
         self.parameters = {
             "delay_time": 0.5,
-            "feedback": 0.5
+            "feedback": 0.3
         }
 
     def process(self, audio):
@@ -27,6 +27,7 @@ class SimpleDelayBuffer():
         self.sample_rate = sample_rate
         # self.buffer = [np.full((1024,2),9)] * 70
         self.saturartion = CubeWave()
+        self.low_pass_filter = lpf()
 
         self.max_delay = 2.0
         self.buffer_size = 86
@@ -37,35 +38,23 @@ class SimpleDelayBuffer():
         # self.delay_sample = self.delay_time * sample_rate
 
     def process(self, audio, delay_time, feedback):
-        # if self.buffer_index == len(self.buffer):
+        #delay_time (seconds) is used to translate that into aproximate location in buffer for delay
+        delay_sample = delay_time * self.sample_rate/1024
+        read_index= (round(self.buffer_index - delay_sample)) % self.buffer_size
 
-        #     #reset buffer index for circular array
-        #     self.buffer_index %= len(self.buffer)
-
-        # print(self.buffer)
-        delay_sample = delay_time * self.sample_rate
-
-        read_index= (self.buffer_index - delay_sample) % self.buffer_size
+        #combines the new audio with pas audio to create echo effect
+        new_audio = audio + (self.buffer[read_index] * feedback)
         
-        # if (self.buffer[self.buffer_index][0] != 0).any():
-            
-            #Additinal effect algorithms
-        low_pass_filter = lpf()
-        cube_wave_clipping = CubeWave()
-        new_audio = cube_wave_clipping.process(audio, 1)
-        new_audio = low_pass_filter.process(new_audio, 0.5)
 
-            #add quiet delay to played audio
-        new_audio = new_audio + (self.buffer[self.buffer_index] * feedback)
-
-            #quieter delay to write to buffer
+        #applies filters to current audio which will be used for the next feedback
         soft_audio = new_audio * 0.5
-
-            #soft clipped delay for buffer
+        soft_audio = self.low_pass_filter.process(audio, 0.2)
         soft_audio = self.saturartion.process(soft_audio,2)
 
+        #writes the new audio with new echo to the buffer for next callback
         self.buffer[self.buffer_index] = audio + soft_audio
 
+        #incerements the buffer andd keepsit circular
         self.buffer_index = (self.buffer_index + 1) % len(self.buffer)
 
         return new_audio
