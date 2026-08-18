@@ -30,5 +30,5 @@ Current functionality:
       CSS
       FastAPI
     
-  More to come....
+  More to come...
   
