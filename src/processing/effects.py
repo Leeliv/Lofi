@@ -3,17 +3,24 @@ class Effect():
 
     def __init__(self):
         self.enable = True
-        self.mix_percent = 0.1
+        self.mix_percent = 0.8
 
-    def set_perameter(self, **kwargs):
-
+    def set_perameters(self, **kwargs):
         for name, value in kwargs.items():
             if name not in self.parameters:
                 raise ValueError(
-                f"{name} is not a valid perameter"
+                    f"{name} is not a valid perameter"
                 )
 
             self.parameters[name] = value
+
+    def set_perameter(self, peram_name, value):
+        if peram_name not in self.parameters:
+            raise ValueError(
+                f"{name} is not a valid perameter"
+            )
+        
+        self.parameters[peram_name] = value
         
 
     def get_perameter():
@@ -23,9 +30,9 @@ class Effect():
         self.enable = True
 
     def bypass(self):
-        self.enable = False
+        self.enable = not self.enable
 
     def mix(self, wet, dry):
-        print("RUNNING MIXXXXXXX")
+        # print("RUNNING MIXXXXXXX")
         return dry * (1 - self.mix_percent) + wet * (self.mix_percent)
 
