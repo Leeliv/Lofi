@@ -66,7 +66,6 @@ class AudioEngine():
         self.audio = audio
         with sd.OutputStream(
             samplerate = sample_rate,
-            # blocksize = blocksize,
             channels = 2,
             callback = self.callback,
             finished_callback = finnished.set,
