@@ -28,7 +28,6 @@ class CLI():
 
             if command == "add":
                 command_obj = AddCommand(perameters)
-                # command_obj.build()
                 self.effects.append(perameters[0])
                 self.command_queue.put(command_obj)
             
@@ -134,12 +133,9 @@ class RemoveCommand():
 class AddCommand():
 
     def __init__(self, perameters):
-        # self.effect = None
         self.perameters = perameters
-        # self.effect_obj = None
 
     def execute(self, engine):
-        # print("peramsssss")
 
         if not self.perameters:
             return
@@ -179,6 +175,5 @@ class AddCommand():
                 lpf()
             )
 
-    # def execute(self, engine):
         engine.pedal.add_effect(effect)
 
