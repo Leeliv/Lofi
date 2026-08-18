@@ -15,6 +15,14 @@ from processing.lowpassfilter import LpwPassFilter, lpf
 class AudioEngine():
 
     def __init__(self, sample_rate, pedal, command_queue):
+        self.effect_list = {
+            "soft_clip": ["drive: float"],
+            "bit_crush": ["bit_depth: int"],
+            "down_sample": ["reduction: int"],
+            "wow_flutter": ["wow_depth: float", "wow_rate: float", "flutter_depth: float", "flutter_rate: float"],
+            "delay": ["delay_time: Float", "feedback: Float"],
+            "lpf": ["smooth_factor: int(0-1)"]
+        }
         self.command_queue = command_queue
         self.pedal = pedal
         self.audio = []
@@ -43,8 +51,6 @@ class AudioEngine():
 
             outdata[:] = chunk
             self.current_frame += chunk_size 
-
-        
 
     def process_command(self):
         while True:

@@ -21,7 +21,10 @@ class CLI():
             print("\n")
             command_split = command_string.split(" ")
             command = command_split[0]
+            print("PRINTING COMMAND")
+            print(command)
             perameters = command_split[1:]
+            print(perameters)
 
             if command == "add":
                 command_obj = AddCommand(perameters)
@@ -53,12 +56,27 @@ class CLI():
                 command_obj = EditPerams(perameters)
                 self.command_queue.put(command_obj)
 
+            if command == "list":
+                command_obj = AllEffects()
+                self.command_queue.put(command_obj)
+
 
     def edit():
         pass
 
     def stop(self):
         self.running = False
+
+class AllEffects():
+
+    def execute(self, engine):
+        print("EFFECTS LIST")
+        for effect, params in engine.effect_list.items():
+            print(f"{effect}:")
+            for param in params:
+                print(f"    {param}")
+
+            print("\n")
 
 class ViewEffect():
 
