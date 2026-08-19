@@ -5,6 +5,9 @@ from processing.effects import Effect
 class DownSampler(Effect):
 
     def __init__(self, reduction, algorithm):
+        super().__init__()
+
+        self.name = "down_sample"
         self.algorithm = algorithm
         self.parameters = {
             "reduction": reduction

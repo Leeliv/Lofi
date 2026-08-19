@@ -10,6 +10,7 @@ class Delay(Effect):
     def __init__(self, algorithm):
         super().__init__()
 
+        self.name = "delay"
         self.algorithm = algorithm
         # self.sample_rate = sample_rate
         self.parameters = {

@@ -51,6 +51,10 @@ class CLI():
                 command_obj = ViewEffect(perameters, self.effects)
                 self.command_queue.put(command_obj)
 
+            if command == "effects":
+                command_obj = ViewEffects()
+                self.command_queue.put(command_obj)
+
             if command == "set":
                 command_obj = EditPerams(perameters)
                 self.command_queue.put(command_obj)
@@ -90,6 +94,12 @@ class ViewEffect():
         print(effect_name)
         print(parameters_names)
         print("\n")
+
+class ViewEffects():
+
+    def execute(self, engine):
+        for i, effect in enumerate(engine.pedal.effects):
+            print(f"{effect.name}: \n {effect.parameters} \n")
 
 
 class EditPerams():
@@ -138,42 +148,47 @@ class AddCommand():
     def execute(self, engine):
 
         if not self.perameters:
-            return
+            return 
 
-        if self.perameters[0] == "bit_crush":
+        elif self.perameters[0] == "bit_crush":
             effect = BitCrushing(
                 int(self.perameters[1]), 
                 BitDepthReduction()
             )
 
-        if self.perameters[0] == "soft_clip":
+        elif self.perameters[0] == "soft_clip":
             effect = SoftClipping(
-                int(self.perameters[1]), 
+                float(self.perameters[1]), 
                 CubeWave()
             )
 
-        if self.perameters[0] == "delay":
+        elif self.perameters[0] == "delay":
             effect = Delay(
                 SimpleDelayBuffer(engine.sample_rate)
             )
 
-        if self.perameters[0] == "down_sample":
+        elif self.perameters[0] == "down_sample":
             effect = DownSampler(
                 int(self.perameters[1]), 
                 ZeroAndHold()
             )
             
-        if self.perameters[0] == "wow_flutter":
+        elif self.perameters[0] == "wow_flutter":
             effect = WowAndFlutter(
                 engine.sample_rate, 
                 LFO()
             )
 
-        if self.perameters[0] == "lpf":
+        elif self.perameters[0] == "lpf":
             effect = LpwPassFilter(
                 float(self.perameters[1]), 
                 lpf()
             )
+
+        else:
+            return 
+
+        
 
         engine.pedal.add_effect(effect)
 
