@@ -6,6 +6,7 @@ class BitCrushing(Effect):
     def __init__(self, bit_depth, algorithm):
         super().__init__()
 
+        self.name = "bit_crush"
         self.algorithm = algorithm
         self.parameters = {
             "bit_depth": bit_depth

@@ -5,6 +5,9 @@ from processing.effects import Effect
 class LpwPassFilter(Effect):
 
     def __init__(self, smooth_factor, algorithm):
+
+        super().__init__()
+        self.name = "lpf"
         self.algorithm = algorithm
         self.parameters = {
             "smooth_factor": smooth_factor

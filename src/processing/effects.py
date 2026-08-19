@@ -2,6 +2,7 @@
 class Effect():
 
     def __init__(self):
+        self.name = "vvv"
         self.enable = True
         self.mix_percent = 0.8
 

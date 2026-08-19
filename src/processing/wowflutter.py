@@ -5,6 +5,7 @@ class WowAndFlutter(Effect):
 
     def __init__(self, sample_rate, algorithm):
         super().__init__()
+        self.name = "wow_flutter"
         self.algorithm = algorithm
         self.parameters = {
             "sample_rate": sample_rate,

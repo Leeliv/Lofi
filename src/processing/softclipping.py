@@ -4,6 +4,8 @@ from processing.effects import Effect
 class SoftClipping(Effect):
 
     def __init__(self, drive, algorithm):
+        super().__init__()
+        self.name = "soft_clip"
         self.algorithm = algorithm
         self.parameters = {
             "drive": drive
