@@ -60,6 +60,16 @@ class AudioEngine():
 
             except Empty:
                 break
+
+    def process_audio(self, audio):
+        """Process an in-memory audio buffer through this engine's pedal board.
+
+        This is the non-realtime counterpart to the processing done by
+        :meth:`callback`, intended for file uploads and offline rendering.
+        """
+        self.process_command()
+        audio = np.asarray(audio, dtype=np.float32)
+        return self.pedal.process(audio)
         
     def play(self, audio, sample_rate):
         finnished = threading.Event()
@@ -81,4 +91,3 @@ class AudioEngine():
     def resume(self):
         self.playback = True
         print("PLAYYYINGGG")
-
