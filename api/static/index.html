@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Lofi Pedal — API Test UI</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+  h1 { font-size: 1.3rem; }
+  h2 { font-size: 1rem; margin-top: 2rem; border-bottom: 1px solid #ddd; padding-bottom: .25rem; }
+  #status { font-size: .85rem; padding: .3rem .6rem; border-radius: 4px; display: inline-block; }
+  #status.ok { background: #d7f5da; }
+  #status.bad { background: #f7d7d7; }
+  fieldset { border: 1px solid #ddd; border-radius: 6px; margin-bottom: .75rem; padding: .6rem .8rem; }
+  legend { font-weight: 600; padding: 0 .3rem; }
+  .row { display: flex; align-items: center; gap: .5rem; margin: .3rem 0; }
+  .row label { width: 9rem; font-size: .85rem; }
+  .row input[type=range] { flex: 1; }
+  .row output { width: 3.5rem; text-align: right; font-variant-numeric: tabular-nums; font-size: .85rem; }
+  button { cursor: pointer; }
+  audio { width: 100%; margin-top: .5rem; }
+  progress { width: 100%; }
+  #log { background: #111; color: #b7f7b7; font: .75rem/1.3 monospace; height: 10rem; overflow-y: auto; padding: .5rem; border-radius: 4px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+
+<h1>Lofi Pedal — API Test UI</h1>
+<span id="status" class="bad">disconnected</span>
+<button id="reconnect-btn">Reconnect</button>
+
+<h2>Upload &amp; Process</h2>
+<div class="row">
+  <input type="file" id="file-input" accept="audio/wav" />
+  <button id="upload-btn" disabled>Upload &amp; Process</button>
+</div>
+<progress id="progress" value="0" max="1"></progress>
+<div id="progress-label" style="font-size:.8rem;color:#666;"></div>
+
+<h2>Playback</h2>
+<audio id="player" controls></audio>
+<p style="font-size:.8rem;color:#666;">Play/pause and seek are the native audio player controls above.</p>
+
+<h2>Add Effect</h2>
+<div class="row">
+  <select id="effect-select" disabled></select>
+  <label id="arg-label" style="width:auto;display:none;"></label>
+  <input type="number" id="arg-input" style="width:5rem;display:none;" />
+  <button id="add-btn" disabled>Add</button>
+</div>
+
+<h2>Effect Chain</h2>
+<div id="chain"></div>
+
+<h2>Log</h2>
+<div id="log"></div>
+
+<script>
+  const PARAM_RANGES = {
+    drive:          { min: 0.1, max: 10,  step: 0.1  },
+    bit_depth:      { min: 1,   max: 16,  step: 1    },
+    reduction:      { min: 1,   max: 50,  step: 1    },
+    wow_depth:      { min: 0,   max: 5,   step: 0.1  },
+    wow_rate:       { min: 0,   max: 50,  step: 0.5  },
+    flutter_depth:  { min: 0,   max: 50,  step: 0.5  },
+    flutter_rate:   { min: 0,   max: 5,   step: 0.1  },
+    delay_time:     { min: 0,   max: 2,   step: 0.01 },
+    feedback:       { min: 0,   max: 0.95, step: 0.01 },
+    smooth_factor:  { min: 0.01, max: 1,  step: 0.01 },
+  };
+  const DEFAULT_RANGE = { min: 0, max: 10, step: 0.1 };
+  const HIDDEN_PARAMS = new Set(["sample_rate"]);
+  const EFFECTS_NEEDING_ARG = {
+    bit_crush:   { label: "Bit Depth",     default: 8,   step: 1    },
+    soft_clip:   { label: "Drive",         default: 1,   step: 0.1  },
+    down_sample: { label: "Reduction",     default: 2,   step: 1    },
+    lpf:         { label: "Smooth Factor", default: 0.5, step: 0.01 },
+  };
+  const UPLOAD_CHUNK_BYTES = 256 * 1024;
+
+  const statusEl = document.getElementById("status");
+  const logEl = document.getElementById("log");
+  const fileInput = document.getElementById("file-input");
+  const uploadBtn = document.getElementById("upload-btn");
+  const progressEl = document.getElementById("progress");
+  const progressLabel = document.getElementById("progress-label");
+  const player = document.getElementById("player");
+  const effectSelect = document.getElementById("effect-select");
+  const argLabel = document.getElementById("arg-label");
+  const argInput = document.getElementById("arg-input");
+  const addBtn = document.getElementById("add-btn");
+  const chainEl = document.getElementById("chain");
+  const reconnectBtn = document.getElementById("reconnect-btn");
+
+  let ws = null;
+  let catalog = {};
+  let capture = null; // in-progress download of processed audio
+
+  function log(line) {
+    logEl.textContent += line + "\n";
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function prettify(name) {
+    return name.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  function sendJson(obj) {
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    ws.send(JSON.stringify(obj));
+    log("-> " + JSON.stringify(obj));
+  }
+
+  function setControlsEnabled(enabled) {
+    uploadBtn.disabled = !enabled;
+    effectSelect.disabled = !enabled;
+    addBtn.disabled = !enabled;
+  }
+
+  function connect() {
+    const proto = location.protocol === "https:" ? "wss://" : "ws://";
+    ws = new WebSocket(proto + location.host + "/ws/process-wav");
+    ws.binaryType = "arraybuffer";
+
+    ws.onopen = () => {
+      statusEl.textContent = "connected";
+      statusEl.className = "ok";
+      setControlsEnabled(true);
+      sendJson({ type: "catalog" });
+    };
+
+    ws.onclose = () => {
+      statusEl.textContent = "disconnected";
+      statusEl.className = "bad";
+      setControlsEnabled(false);
+    };
+
+    ws.onmessage = (event) => {
+      if (typeof event.data === "string") {
+        const msg = JSON.parse(event.data);
+        if (msg.type !== "upload-progress") log("<- " + event.data);
+        handleMessage(msg);
+      } else {
+        handleBinaryChunk(event.data);
+      }
+    };
+  }
+
+  reconnectBtn.onclick = () => {
+    if (ws) ws.close();
+    connect();
+  };
+
+  function handleMessage(msg) {
+    switch (msg.type) {
+      case "catalog":
+        catalog = msg.effects;
+        populateEffectSelect();
+        break;
+      case "state":
+        renderChain(msg.chain);
+        break;
+      case "error":
+        log("ERROR: " + msg.message);
+        break;
+      case "upload-ack":
+        progressLabel.textContent = "Uploading...";
+        break;
+      case "upload-progress":
+        progressEl.max = msg.total || 1;
+        progressEl.value = msg.received;
+        break;
+      case "audio-start":
+        capture = {
+          sampleRate: msg.sample_rate,
+          channels: msg.channels,
+          totalFrames: msg.total_frames,
+          received: 0,
+          data: new Float32Array(msg.total_frames * msg.channels),
+        };
+        progressEl.max = msg.total_frames;
+        progressEl.value = 0;
+        progressLabel.textContent = "Processing...";
+        break;
+      case "audio-end":
+        finishCapture();
+        break;
+    }
+  }
+
+  function handleBinaryChunk(buf) {
+    if (!capture) return;
+    const frame = new Float32Array(buf);
+    capture.data.set(frame, capture.received * capture.channels);
+    capture.received += frame.length / capture.channels;
+    progressEl.value = capture.received;
+  }
+
+  function finishCapture() {
+    const blob = encodeWav(capture.data, capture.channels, capture.sampleRate);
+    if (player.src) URL.revokeObjectURL(player.src);
+    player.src = URL.createObjectURL(blob);
+    progressLabel.textContent = `Done — ${capture.received} frames processed.`;
+    capture = null;
+  }
+
+  // Minimal 16-bit PCM WAV encoder so the native <audio> element can play
+  // back the processed float32 stream without any extra libraries.
+  function encodeWav(interleaved, numChannels, sampleRate) {
+    const numFrames = interleaved.length / numChannels;
+    const blockAlign = numChannels * 2;
+    const dataSize = numFrames * blockAlign;
+    const buffer = new ArrayBuffer(44 + dataSize);
+    const view = new DataView(buffer);
+
+    function writeString(offset, str) {
+      for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+    }
+
+    writeString(0, "RIFF");
+    view.setUint32(4, 36 + dataSize, true);
+    writeString(8, "WAVE");
+    writeString(12, "fmt ");
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * blockAlign, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, 16, true);
+    writeString(36, "data");
+    view.setUint32(40, dataSize, true);
+
+    let offset = 44;
+    for (let i = 0; i < interleaved.length; i++) {
+      const s = Math.max(-1, Math.min(1, interleaved[i]));
+      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+      offset += 2;
+    }
+
+    return new Blob([buffer], { type: "audio/wav" });
+  }
+
+  uploadBtn.onclick = async () => {
+    const file = fileInput.files[0];
+    if (!file) { alert("Choose a WAV file first."); return; }
+
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    sendJson({ type: "upload-start", total_bytes: bytes.length });
+    progressEl.max = bytes.length;
+    progressEl.value = 0;
+
+    for (let offset = 0; offset < bytes.length; offset += UPLOAD_CHUNK_BYTES) {
+      ws.send(bytes.slice(offset, offset + UPLOAD_CHUNK_BYTES).buffer);
+    }
+
+    sendJson({ type: "upload-end" });
+  };
+
+  function populateEffectSelect() {
+    effectSelect.innerHTML = "";
+    for (const name of Object.keys(catalog)) {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = prettify(name);
+      effectSelect.appendChild(option);
+    }
+    updateArgInput();
+  }
+
+  effectSelect.onchange = updateArgInput;
+
+  function updateArgInput() {
+    const info = EFFECTS_NEEDING_ARG[effectSelect.value];
+    if (info) {
+      argLabel.textContent = info.label;
+      argLabel.style.display = "";
+      argInput.style.display = "";
+      argInput.step = info.step;
+      argInput.value = info.default;
+    } else {
+      argLabel.style.display = "none";
+      argInput.style.display = "none";
+    }
+  }
+
+  addBtn.onclick = () => {
+    const name = effectSelect.value;
+    if (!name) return;
+    const args = EFFECTS_NEEDING_ARG[name] ? [argInput.value] : [];
+    sendJson({ type: "add", effect: name, args });
+  };
+
+  function renderChain(chain) {
+    chainEl.innerHTML = "";
+    if (chain.length === 0) {
+      chainEl.innerHTML = "<p style='color:#666;font-size:.85rem;'>No effects added yet.</p>";
+      return;
+    }
+
+    for (const effect of chain) {
+      const fieldset = document.createElement("fieldset");
+
+      const legend = document.createElement("legend");
+      legend.textContent = `${effect.index}: ${prettify(effect.name)}`;
+      fieldset.appendChild(legend);
+
+      const controlsRow = document.createElement("div");
+      controlsRow.className = "row";
+
+      const bypassLabel = document.createElement("label");
+      bypassLabel.style.width = "auto";
+      const bypassCheckbox = document.createElement("input");
+      bypassCheckbox.type = "checkbox";
+      bypassCheckbox.checked = effect.enabled;
+      bypassCheckbox.onchange = () => sendJson({ type: "bypass", index: effect.index });
+      bypassLabel.appendChild(bypassCheckbox);
+      bypassLabel.append(" enabled");
+      controlsRow.appendChild(bypassLabel);
+
+      const removeBtn = document.createElement("button");
+      removeBtn.textContent = "Remove";
+      removeBtn.onclick = () => sendJson({ type: "remove", index: effect.index });
+      controlsRow.appendChild(removeBtn);
+
+      fieldset.appendChild(controlsRow);
+
+      for (const [param, value] of Object.entries(effect.parameters)) {
+        if (HIDDEN_PARAMS.has(param)) continue;
+
+        const range = PARAM_RANGES[param] || DEFAULT_RANGE;
+        const row = document.createElement("div");
+        row.className = "row";
+
+        const label = document.createElement("label");
+        label.textContent = prettify(param);
+        row.appendChild(label);
+
+        const dial = document.createElement("input");
+        dial.type = "range";
+        dial.min = range.min;
+        dial.max = range.max;
+        dial.step = range.step;
+        dial.value = value;
+        row.appendChild(dial);
+
+        const readout = document.createElement("output");
+        readout.textContent = value;
+        row.appendChild(readout);
+
+        dial.oninput = () => { readout.textContent = dial.value; };
+        dial.onchange = () => {
+          sendJson({ type: "set", index: effect.index, param, value: parseFloat(dial.value) });
+        };
+
+        fieldset.appendChild(row);
+      }
+
+      chainEl.appendChild(fieldset);
+    }
+  }
+
+  connect();
+</script>
+</body>
+</html>
