@@ -18,7 +18,7 @@ class Effect():
     def set_perameter(self, peram_name, value):
         if peram_name not in self.parameters:
             raise ValueError(
-                f"{name} is not a valid perameter"
+                f"{peram_name} is not a valid perameter"
             )
         
         self.parameters[peram_name] = value
